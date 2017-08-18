@@ -408,10 +408,12 @@ describe('Grouping Store', function() {
   describe('Hashes list (to be unmerged)', function() {
     let unmergeList;
     let unmergeState;
+    let unmergeCollapseState;
 
     beforeEach(async function() {
       unmergeList = new Set();
       unmergeState = new Map();
+      unmergeCollapseState = new Set();
       await GroupingStore.onFetch([
         {dataKey: 'merged', endpoint: '/issues/groupId/hashes/'}
       ]);
@@ -456,6 +458,7 @@ describe('Grouping Store', function() {
         expect(GroupingStore.unmergeState).toEqual(unmergeState);
 
         expect(trigger).toHaveBeenLastCalledWith({
+          unmergeCollapseState,
           unmergeDisabled: false,
           unmergeList,
           unmergeState
@@ -488,6 +491,7 @@ describe('Grouping Store', function() {
         expect(GroupingStore.unmergeState).toEqual(unmergeState);
 
         expect(trigger).toHaveBeenLastCalledWith({
+          unmergeCollapseState,
           unmergeDisabled: false,
           unmergeList,
           unmergeState
@@ -516,13 +520,14 @@ describe('Grouping Store', function() {
         });
 
         expect(trigger).toHaveBeenCalledWith({
+          unmergeCollapseState,
           unmergeDisabled: true,
           unmergeList,
           unmergeState
         });
       });
 
-      it('keeps rows in "busy" state and unchecks after successfully adding to merge queue', async function() {
+      it('keeps rows in "busy" state and unchecks after successfully adding to unmerge queue', async function() {
         GroupingStore.onToggleUnmerge('1');
         unmergeList.add('1');
         unmergeState.set('1', {checked: true, busy: false});
@@ -532,6 +537,7 @@ describe('Grouping Store', function() {
         });
 
         expect(trigger).toHaveBeenCalledWith({
+          unmergeCollapseState,
           unmergeDisabled: true,
           unmergeList,
           unmergeState
@@ -540,6 +546,7 @@ describe('Grouping Store', function() {
         await promise;
 
         expect(trigger).toHaveBeenLastCalledWith({
+          unmergeCollapseState,
           unmergeDisabled: false,
           unmergeList: new Set(),
           unmergeState
@@ -564,6 +571,7 @@ describe('Grouping Store', function() {
         });
 
         expect(trigger).toHaveBeenCalledWith({
+          unmergeCollapseState,
           unmergeDisabled: true,
           unmergeList,
           unmergeState
@@ -572,6 +580,7 @@ describe('Grouping Store', function() {
         await promise;
 
         expect(trigger).toHaveBeenLastCalledWith({
+          unmergeCollapseState,
           unmergeDisabled: false,
           unmergeList,
           unmergeState
